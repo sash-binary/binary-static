@@ -1734,7 +1734,8 @@ body #not_authenticated_financial ul.checked > li {
   #content.careers-content .career .video-container {
     width: 100%;
     height: 0px;
-    position: relative; }
+    position: relative;
+    padding-bottom: 50%; }
   #content.careers-content .career .video-container iframe, #content.careers-content .career .video-container object, #content.careers-content .career .video-container embed {
     width: 100%;
     height: 100%;
