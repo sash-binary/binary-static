@@ -9147,7 +9147,6 @@ var ThirdPartyLinks = function () {
         }
         return !!destination.host && !new RegExp('^.*\\.' + (getCurrentBinaryDomain() || 'binary\\.com') + '$').test(destination.host) // destination host is not binary subdomain
         && !new RegExp('^.*\\.binary\\.bot$').test(destination.host) // destination host is not binary subdomain
-        && !new RegExp('^deriv\\.com').test(destination.host) // destination host is not deriv
         && !/www.(betonmarkets|xodds).com/.test(destination.host) // destination host is not binary old domain
         && window.location.host !== destination.host;
     };
@@ -31302,8 +31301,6 @@ var MetaTraderConfig = function () {
     var newAccCheck = function newAccCheck(acc_type, message_selector) {
         return new Promise(function (resolve) {
             var $message = $messages.find('#msg_real_financial').clone();
-            var $new_account_financial_authenticate_msg = $('#new_account_financial_authenticate_msg');
-            $new_account_financial_authenticate_msg.setVisibility(0);
             var is_virtual = Client.get('is_virtual');
             var is_demo = accounts_info[acc_type].is_demo;
 
@@ -31363,13 +31360,9 @@ var MetaTraderConfig = function () {
                                 showCitizenshipMessage();
                                 is_ok = false;
                             }
-                            if (is_ok && !isAuthenticated()) {
-                                if (accounts_info[acc_type].mt5_account_type === 'advanced') {
-                                    $message.find('.authenticate').setVisibility(1);
-                                    is_ok = false;
-                                } else {
-                                    $new_account_financial_authenticate_msg.setVisibility(1);
-                                }
+                            if (is_ok && !isAuthenticated() && accounts_info[acc_type].mt5_account_type === 'advanced') {
+                                $message.find('.authenticate').setVisibility(1);
+                                is_ok = false;
                             }
 
                             if (is_ok) resolve();else resolveWithMessage();
@@ -32524,7 +32517,6 @@ var MetaTraderUI = function () {
         if (/\b(disabled|selected|existed)\b/.test($item.attr('class'))) return;
         $item.parents('.type-group').find('.' + box_class + '.selected').removeClass('selected');
         $item.addClass('selected');
-        $('#new_account_financial_authenticate_msg').setVisibility(0);
         var selected_acc_type = $item.attr('data-acc-type');
         var action = 'new_account';
         if (/(demo|real)/.test(selected_acc_type)) {
@@ -33643,7 +33635,6 @@ module.exports = RealityCheckUI;
 "use strict";
 
 
-var generateBirthDate = __webpack_require__(/*! ../../common/attach_dom/birth_date_picker */ "./src/javascript/app/common/attach_dom/birth_date_picker.js");
 var FormManager = __webpack_require__(/*! ../../common/form_manager */ "./src/javascript/app/common/form_manager.js");
 var Login = __webpack_require__(/*! ../../../_common/base/login */ "./src/javascript/_common/base/login.js");
 var localize = __webpack_require__(/*! ../../../_common/localize */ "./src/javascript/_common/localize.js").localize;
@@ -33677,18 +33668,9 @@ var ResetPassword = function () {
     };
 
     var onLoad = function onLoad() {
-        generateBirthDate();
-
-        $('#have_real_account').off('click').on('click', function () {
-            if ($('#have_real_account_option_0').is(':checked')) {
-                $('#dob_field').setVisibility(1);
-            } else {
-                $('#dob_field').setVisibility(0);
-            }
-        });
-
         var form_id = '#frm_reset_password';
-        FormManager.init(form_id, [{ selector: '#have_real_account', validations: ['req'], exclude_request: 1 }, { selector: '#date_of_birth', validations: ['req'] }, { selector: '#new_password', validations: ['req', 'password'], re_check_field: '#repeat_password' }, { selector: '#repeat_password', validations: ['req', ['compare', { to: '#new_password' }]], exclude_request: 1 }, { request_field: 'reset_password', value: 1 }], true);
+
+        FormManager.init(form_id, [{ selector: '#have_real_account', validations: ['req'], exclude_request: 1 }, { selector: '#new_password', validations: ['req', 'password'], re_check_field: '#repeat_password' }, { selector: '#repeat_password', validations: ['req', ['compare', { to: '#new_password' }]], exclude_request: 1 }, { request_field: 'reset_password', value: 1 }], true);
 
         FormManager.handleSubmit({
             form_selector: form_id,
