@@ -15127,6 +15127,7 @@ var AccountTransfer = function () {
             elementTextContent(el_error, error.message);
             if (el_error.parentNode) {
                 el_error.parentNode.setVisibility(1);
+                setLoadingVisibility(0);
             }
             return true;
         }
