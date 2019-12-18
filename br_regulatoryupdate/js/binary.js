@@ -27868,6 +27868,7 @@ module.exports = ProfitTableUI;
 
 var Client = __webpack_require__(/*! ../../../base/client */ "./src/javascript/app/base/client.js");
 var BinarySocket = __webpack_require__(/*! ../../../base/socket */ "./src/javascript/app/base/socket.js");
+var Dialog = __webpack_require__(/*! ../../../common/attach_dom/dialog */ "./src/javascript/app/common/attach_dom/dialog.js");
 var localize = __webpack_require__(/*! ../../../../_common/localize */ "./src/javascript/_common/localize.js").localize;
 var State = __webpack_require__(/*! ../../../../_common/storage */ "./src/javascript/_common/storage.js").State;
 
@@ -27880,6 +27881,21 @@ var Settings = function () {
 
             if (!/social_signup/.test(status)) {
                 $('#change_password').setVisibility(1);
+            }
+
+            // Disabling Authentication button for SVG accounts
+            var is_authenticated = status.includes('authenticated');
+            var is_client_prompt_to_authenticate = State.getResponse('get_account_status.prompt_client_to_authenticate');
+            var is_svg = Client.get('landing_company_shortcode') === 'svg';
+            if (is_svg && !is_client_prompt_to_authenticate && !is_authenticated) {
+                $('#authenticate a').attr('href', '#').on('click', function () {
+                    Dialog.alert({
+                        id: 'authorize_svg_error',
+                        localized_message: localize('You do not need to authenticate your account at this time.[_1]We will inform you when your account needs to be authenticated.', '<br />'),
+                        localized_title: localize('No authentication required'),
+                        ok_text: localize('Back to trading')
+                    });
+                });
             }
 
             // Professional Client menu should only be shown to maltainvest accounts.
